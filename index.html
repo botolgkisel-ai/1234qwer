@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Лифт 13 — игры</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#0b0a1a;--panel:#17142e;--line:#2c2550;--text:#efeaff;--muted:#9d93c4;--lamp:#ffce6e;--cold:#8cdcff;--danger:#ff5a5a}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;overflow:hidden;user-select:none;-webkit-user-select:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.screen{position:fixed;inset:0;display:none;flex-direction:column}
+.screen.on{display:flex}
+h1,.big{font-family:"Arial Black","Segoe UI Black",Impact,system-ui,sans-serif;letter-spacing:.5px}
+
+/* ---------- меню ---------- */
+#menu{overflow-y:auto;padding:20px 16px 28px;background:radial-gradient(120% 60% at 50% 0%,#2b1b52 0%,var(--bg) 60%)}
+#menu h1{font-size:30px;text-align:center;color:var(--lamp);text-shadow:0 0 18px rgba(255,206,110,.45);margin-top:6px}
+#menu .sub{text-align:center;color:var(--muted);font-size:14px;margin:6px 0 18px}
+.card{display:flex;gap:14px;align-items:center;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:12px;margin-bottom:12px;transition:transform .12s}
+.card:active{transform:scale(.97)}
+.thumb{flex:0 0 84px;height:112px;border-radius:12px;background-size:cover;background-position:center;position:relative;overflow:hidden}
+.thumb img{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);height:96px}
+.card b{display:block;font-size:18px;margin-bottom:4px}
+.card p{font-size:13px;color:var(--muted);line-height:1.35}
+.card .stat{margin-top:6px;font-size:12px;color:var(--lamp)}
+/* анимации меню */
+#menu h1{animation:flicker 5s infinite}
+@keyframes flicker{0%,18%,22%,62%,64%,100%{opacity:1}20%,63%{opacity:.35}}
+#menu .card,#menu .gal{opacity:0;animation:up .5s ease-out forwards}
+#menu .card:nth-of-type(1){animation-delay:.05s}#menu .card:nth-of-type(2){animation-delay:.15s}#menu .card:nth-of-type(3){animation-delay:.25s}#menu .gal{animation-delay:.35s}
+.thumb img{animation:bob 1.6s ease-in-out infinite}
+.card:nth-of-type(2) .thumb img{animation-duration:.45s}
+@keyframes bob{50%{transform:translateX(-50%) translateY(-5px)}}
+.dust{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.dust i{position:absolute;bottom:-10px;width:3px;height:3px;border-radius:50%;background:#ffe3a6;opacity:0;animation:rise linear infinite}
+@keyframes rise{10%{opacity:.7}90%{opacity:.5}to{transform:translateY(-105vh) translateX(30px);opacity:0}}
+#menu>*{position:relative;z-index:1}
+.gal{display:block;width:100%;padding:14px;border-radius:16px;background:linear-gradient(90deg,#3a2a10,#2a1f4a);border:1px solid #6a5420;font-weight:800;font-size:16px;color:var(--lamp)}
+/* галерея концовок */
+#gallery{overflow-y:auto;padding:20px 16px 28px;background:radial-gradient(120% 60% at 50% 0%,#2b1b52 0%,var(--bg) 60%)}
+#gallery h1{text-align:center;color:var(--lamp);font-size:26px;margin-bottom:16px}
+.ends{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.end-t{border-radius:16px;padding:14px 12px;min-height:130px;background:var(--panel);border:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between;gap:8px;opacity:0;animation:up .4s ease-out forwards}
+.end-t b{font-size:15px}.end-t small{color:var(--muted);font-size:12px;line-height:1.35}
+.end-t.got{border-color:#6a5420;background:linear-gradient(160deg,#2a2152,#3a2a10)}
+.end-t.got b{color:var(--lamp)}
+.end-t .btn{padding:9px;font-size:13px}
+/* плавная смена клипов */
+#story video{transition:opacity .25s}
+#story video.fade{opacity:0}
+#choice .btn{opacity:0;animation:up .35s ease-out forwards}
+#choice .btn:nth-of-type(2){animation-delay:.08s}#choice .btn:nth-of-type(3){animation-delay:.16s}
+
+/* ---------- мультик с выбором ---------- */
+#story{background:#000}
+#story video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+#choice{position:absolute;left:0;right:0;bottom:0;padding:22px 16px calc(18px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(5,3,15,.92) 22%);display:none;flex-direction:column;gap:10px}
+#choice.on{display:flex;animation:up .35s ease-out}
+@keyframes up{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+#choice .txt{font-size:15px;line-height:1.45;margin-bottom:6px}
+#choice .txt b{color:var(--lamp)}
+#choice .end{font-size:20px;color:var(--lamp);text-align:center}
+.btn{display:block;width:100%;padding:15px;border-radius:14px;background:#2a2152;border:1px solid #4a3c86;font-size:16px;font-weight:700;text-align:center}
+.btn.main{background:var(--lamp);color:#2a1700;border-color:var(--lamp)}
+.btn:active{transform:scale(.97)}
+#skip{position:absolute;top:calc(12px + env(safe-area-inset-top));right:12px;padding:8px 12px;border-radius:20px;background:rgba(0,0,0,.5);font-size:13px;color:#ddd}
+#tapplay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:20px;background:rgba(0,0,0,.6)}
+
+/* ---------- игры на canvas ---------- */
+#run canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.hud{position:absolute;top:calc(10px + env(safe-area-inset-top));left:0;right:0;display:flex;justify-content:space-between;padding:0 16px;font-size:18px;font-weight:800;text-shadow:0 2px 6px #000;pointer-events:none}
+.over{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;background:rgba(5,3,15,.78)}
+.over.on{display:flex;animation:up .3s ease-out}
+.over h2{font-family:"Arial Black",Impact,sans-serif;font-size:30px;color:var(--lamp)}
+.over p{color:var(--muted);line-height:1.45;max-width:320px}
+.over .btn{max-width:300px}
+.over img{height:150px}
+
+/* ---------- запомни этажи ---------- */
+#simon{background:#06051a url(assets/panel.jpg) center/cover;align-items:center}
+#display{margin-top:calc(26px + env(safe-area-inset-top));width:170px;height:84px;border-radius:14px;background:#0a0c12;border:4px solid #2c2f3a;display:flex;align-items:center;justify-content:center;font-family:"Arial Black",Impact,sans-serif;font-size:52px;color:var(--lamp);text-shadow:0 0 16px rgba(255,206,110,.8)}
+#display.bad{color:var(--danger);text-shadow:0 0 18px rgba(255,80,80,.9);animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+#hint{margin:14px 0 6px;font-size:15px;color:#e8e2ff;text-shadow:0 1px 4px #000;min-height:20px}
+#pad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:min(86vw,330px);margin-top:10px}
+.fl{aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 50% 50%,#2e2c2e 0 62%,#56544f 63% 76%,#2a2826 77%);display:flex;align-items:center;justify-content:center;font-family:"Arial Black",Impact,sans-serif;font-size:26px;color:#77736e;transition:all .08s}
+.fl.lit{background:radial-gradient(circle,#ffd66e 0 62%,#8a7a50 63% 76%,#2a2826 77%);color:#6a3600;box-shadow:0 0 34px 6px rgba(255,206,110,.75)}
+.fl.bad{background:radial-gradient(circle,#ff5a5a 0 62%,#7a3a3a 63% 76%,#2a2826 77%);color:#3a0000}
+#pad.lock .fl{pointer-events:none}
+</style>
+</head>
+<body>
+
+<!-- ===================== МЕНЮ ===================== -->
+<section id="menu" class="screen on">
+  <h1>ЛИФТ 13</h1>
+  <div class="sub">Выбери, во что играть</div>
+  <button class="card" data-go="story">
+    <div class="thumb" style="background-image:url(assets/corridor.jpg)"><img src="assets/max_idle.png" alt=""></div>
+    <div><b>🛗 Лифт 13: твой выбор</b><p>Интерактивный мультик. Ты решаешь, что делать Максу на этаже, которого нет.</p><div class="stat" id="st-story"></div></div>
+  </button>
+  <button class="card" data-go="run">
+    <div class="thumb" style="background-image:url(assets/corridor.jpg);background-position:50% 70%"><img src="assets/max_run_2.png" alt=""></div>
+    <div><b>🏃 Побег по коридору</b><p>Лампы падают с потолка. Уворачивайся свайпом и собирай кнопки «7».</p><div class="stat" id="st-run"></div></div>
+  </button>
+  <button class="card" data-go="simon">
+    <div class="thumb" style="background-image:url(assets/panel.jpg)"><img src="assets/max_hit.png" alt=""></div>
+    <div><b>🔢 Запомни этажи</b><p>Лифт показывает кнопки — повтори. Ошибёшься — поедешь на 13-й.</p><div class="stat" id="st-simon"></div></div>
+  </button>
+  <button class="gal" data-gallery>🏆 Мои концовки <span id="st-gal"></span></button>
+  <div class="dust" id="dust"></div>
+</section>
+
+<!-- ===================== ГАЛЕРЕЯ КОНЦОВОК ===================== -->
+<section id="gallery" class="screen">
+  <h1>🏆 Концовки</h1>
+  <div class="ends" id="ends"></div>
+</section>
+
+<!-- ===================== МУЛЬТИК С ВЫБОРОМ ===================== -->
+<section id="story" class="screen">
+  <video id="vid" playsinline webkit-playsinline preload="auto"></video>
+  <button id="skip">Пропустить ⏭</button>
+  <div id="tapplay">▶ Нажми, чтобы смотреть</div>
+  <div id="choice"></div>
+</section>
+
+<!-- ===================== РАННЕР ===================== -->
+<section id="run" class="screen">
+  <canvas id="cv"></canvas>
+  <div class="hud"><span id="r-score">0 м</span><span id="r-btn">🟡 0</span></div>
+  <div class="over" id="r-over"></div>
+</section>
+
+<!-- ===================== ЗАПОМНИ ЭТАЖИ ===================== -->
+<section id="simon" class="screen">
+  <div id="display">1</div>
+  <div id="hint"></div>
+  <div id="pad"></div>
+  <div class="over" id="s-over"></div>
+</section>
+
+<script>
+"use strict";
+const tg = window.Telegram && Telegram.WebApp;
+if (tg) { tg.ready(); tg.expand(); try { tg.setHeaderColor("#0b0a1a"); tg.setBackgroundColor("#0b0a1a"); tg.disableVerticalSwipes && tg.disableVerticalSwipes(); } catch (e) {} }
+const haptic = (k) => { try { tg && tg.HapticFeedback && (k === "ok" || k === "err" ? tg.HapticFeedback.notificationOccurred(k === "ok" ? "success" : "error") : tg.HapticFeedback.impactOccurred(k || "light")); } catch (e) {} };
+const $ = (id) => document.getElementById(id);
+const cloud = tg && tg.isVersionAtLeast && tg.isVersionAtLeast("6.9") && tg.CloudStorage ? tg.CloudStorage : null;
+
+// ---------- сохранения (localStorage + облако Telegram) ----------
+const save = {
+  data: {},
+  load() {
+    try { this.data = JSON.parse(localStorage.getItem("lift13") || "{}"); } catch (e) { this.data = {}; }
+    try {
+      cloud && cloud.getItem("lift13", (err, v) => {
+        if (!err && v) { try { const c = JSON.parse(v); this.merge(c); menuStats(); } catch (e) {} }
+      });
+    } catch (e) {}
+  },
+  merge(c) {
+    const d = this.data;
+    d.endings = [...new Set([...(d.endings || []), ...(c.endings || [])])];
+    d.run = Math.max(d.run || 0, c.run || 0);
+    d.simon = Math.max(d.simon || 0, c.simon || 0);
+  },
+  put() {
+    const s = JSON.stringify(this.data);
+    try { localStorage.setItem("lift13", s); } catch (e) {}
+    try { cloud && cloud.setItem("lift13", s); } catch (e) {}
+  }
+};
+
+// ---------- звук ----------
+let AC = null;
+function ac() { if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } if (AC && AC.state === "suspended") AC.resume(); return AC; }
+function beep(f, dur = 0.18, type = "sine", vol = 0.18) {
+  const a = ac(); if (!a) return;
+  const o = a.createOscillator(), g = a.createGain();
+  o.type = type; o.frequency.value = f;
+  g.gain.setValueAtTime(vol, a.currentTime); g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + dur);
+  o.connect(g).connect(a.destination); o.start(); o.stop(a.currentTime + dur);
+}
+const ding = () => { beep(1318, 0.9, "sine", 0.15); setTimeout(() => beep(1046, 1.1, "sine", 0.15), 300); };
+
+// ---------- навигация ----------
+let current = "menu";
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === id));
+  if (current === "run" && id !== "run") Run.stop();
+  if (current === "story" && id !== "story") Story.stop();
+  if (current === "simon" && id !== "simon") Simon.stop();
+  current = id;
+  if (tg && tg.BackButton) id === "menu" ? tg.BackButton.hide() : tg.BackButton.show();
+  if (id === "menu") menuStats();
+}
+if (tg && tg.BackButton) tg.BackButton.onClick(() => show("menu"));
+document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => {
+  ac(); haptic("light");
+  const g = b.dataset.go; show(g);
+  ({ story: () => Story.start(), run: () => Run.start(), simon: () => Simon.start() })[g]();
+}));
+// пылинки в свете лампы
+for (let i = 0; i < 26; i++) {
+  const p = document.createElement("i");
+  p.style.left = Math.random() * 100 + "%";
+  p.style.animationDuration = 7 + Math.random() * 9 + "s";
+  p.style.animationDelay = -Math.random() * 12 + "s";
+  $("dust").appendChild(p);
+}
+const ENDS = [
+  ["press", "Пассажир этажа 14", "Нажать кнопку, которую нельзя"],
+  ["door14", "Тот, кого ждали", "Открыть дверь с табличкой"],
+  ["flee", "Встреча с собой", "Бежать, не оглядываясь"],
+  ["basement", "Минус тринадцатый", "Не сдаваться в самом начале"],
+  ["voice", "Голос в динамике", "Поговорить с голосом"],
+  ["home", "Домой. Почти.", "Найти зелёную табличку"],
+];
+document.querySelector("[data-gallery]").addEventListener("click", () => { haptic("light"); show("gallery"); gallery(); });
+function gallery() {
+  const got = save.data.endings || [];
+  $("ends").innerHTML = ENDS.map(([id, name, hint], i) => got.includes(name)
+    ? `<div class="end-t got" style="animation-delay:${i * .06}s"><b>🏁 ${name}</b><button class="btn" data-replay="${id}">▶ Смотреть</button></div>`
+    : `<div class="end-t" style="animation-delay:${i * .06}s"><b>🔒 ???</b><small>Подсказка: ${hint}</small></div>`).join("");
+  $("ends").querySelectorAll("[data-replay]").forEach(b => b.onclick = () => { ac(); show("story"); Story.replay(b.dataset.replay); });
+}
+function menuStats() {
+  const d = save.data;
+  $("st-gal").textContent = `${(d.endings || []).length}/6`;
+  $("st-story").textContent = `Концовки: ${(d.endings || []).length}/6`;
+  $("st-run").textContent = d.run ? `Рекорд: ${d.run} м` : "";
+  $("st-simon").textContent = d.simon ? `Лучший этаж: ${d.simon}` : "";
+}
+
+// =====================================================================
+// 1. ЛИФТ 13 — мультик с выбором
+// =====================================================================
+const SCENES = {
+  start: { clips: ["intro"], text: "Лифт сам привёз тебя на <b>13-й этаж</b>. Которого в этом доме нет.<br>Голос из темноты: <i>«Не выходи, когда двери откроются…»</i>",
+    choices: [["🚪 Выйти в коридор", "out"], ["🛗 Остаться в лифте", "stay"], ["🔘 Жать «7», пока не поедет", "basement"]] },
+  basement: { clips: ["end_basement"], text: "Ты жал «7», пока лифт не сорвался вниз. Мимо первого. Мимо подвала. <b>−13.</b> Двери открылись в темноту, полную глаз.", ending: "Минус тринадцатый" },
+  stay: { clips: ["stay"], text: "Ты остался. Лампа лопнула, кабина рухнула — ты еле успел выпрыгнуть. <b>Лифт решил за тебя.</b>", choices: [["➡️ Дальше", "corridor"]] },
+  out: { clips: ["go_out"], text: "Ты шагаешь в коридор. За спиной с лязгом захлопываются двери.", choices: [["➡️ Дальше", "corridor"]] },
+  corridor: { clips: ["corridor"], text: "Часы идут назад. В конце коридора — маленькая дверь. Из-за неё: <b>тук. тук. тук.</b>",
+    choices: [["🚪 Подойти к двери", "lift2"], ["🏃 Бежать к лифту", "run_back"]] },
+  run_back: { clips: ["run_back"], text: "Ты колотишь по дверям лифта. Они не откроются. <b>Назад дороги нет.</b>", choices: [["🚪 Пойти к двери", "lift2"]] },
+  lift2: { clips: ["lift2"], text: "За дверью — новенький лифт. Одна кнопка: <b>14</b>. Твой собственный голос из динамика: <i>«Макс, не нажимай эту кнопку.»</i>",
+    choices: [["🔘 Нажать «14»", "press"], ["✋ Не нажимать и бежать", "refuse"], ["🗣 Спросить: «Кто ты?»", "voice"]] },
+  voice: { clips: ["end_voice"], text: "<i>«Я — это ты. Через минуту.»</i> Лифт моргнул — и теперь <b>ты</b> смотришь из динамика на следующего Макса.", ending: "Голос в динамике" },
+  press: { clips: ["press", "end_press"], text: "Ты нажал. Лифт поехал вверх — 15, 16, 30… А внизу, на седьмом, двери открылись. <b>Кабина пустая.</b>", ending: "Пассажир этажа 14" },
+  refuse: { clips: ["refuse"], text: "Ты выбегаешь в коридор — старого лифта больше нет. На его месте дверь с табличкой <b>«14»</b>.",
+    choices: [["🚪 Открыть дверь 14", "door14"], ["🏃 Бежать по коридору", "flee"], ["🟢 Искать табличку «Выход»", "home"]] },
+  home: { clips: ["end_home"], text: "Зелёная табличка «ВЫХОД», вспышка — и ты на родном седьмом. <b>Дом!</b> Только табло над лифтом почему-то снова показывает «13»…", ending: "Домой. Почти." },
+  door14: { clips: ["door14", "end_door"], text: "<i>«Ты наконец-то пришёл.»</i> Дверь закрылась за тобой. На табличке теперь — <b>«15»</b>.", ending: "Тот, кого ждали" },
+  flee: { clips: ["flee", "end_flee"], text: "Коридор тянется бесконечно. В конце — силуэт. Вспышка… Это <b>ты сам</b>.", ending: "Встреча с собой" },
+};
+const Story = (() => {
+  const vid = $("vid"), box = $("choice"), tap = $("tapplay");
+  let queue = [], scene = null, replaying = false;
+  function play(name) {
+    vid.classList.add("fade");
+    vid.src = `clips/${name}.mp4`;
+    tap.style.display = "none";
+    vid.onplaying = () => vid.classList.remove("fade");
+    const p = vid.play();
+    if (p && p.catch) p.catch(() => { tap.style.display = "flex"; vid.classList.remove("fade"); });
+  }
+  tap.onclick = () => { tap.style.display = "none"; vid.play(); };
+  vid.onended = next;
+  $("skip").onclick = () => { haptic("light"); next(); };
+  function next() {
+    if (queue.length) return play(queue.shift());
+    vid.pause();
+    if (replaying) { show("gallery"); gallery(); return; }
+    renderChoice();
+  }
+  function go(id) {
+    replaying = false;
+    scene = SCENES[id];
+    box.classList.remove("on");
+    queue = scene.clips.slice();
+    $("skip").style.display = "";
+    play(queue.shift());
+  }
+  function renderChoice() {
+    $("skip").style.display = "none";
+    let h = `<div class="txt">${scene.text}</div>`;
+    if (scene.ending) {
+      const d = save.data; d.endings = d.endings || [];
+      const isNew = !d.endings.includes(scene.ending);
+      if (isNew) { d.endings.push(scene.ending); save.put(); }
+      haptic("ok");
+      h += `<div class="end big">🏁 ${scene.ending}${isNew ? " — новая!" : ""}</div>
+            <div class="txt" style="text-align:center;color:var(--muted)">Найдено концовок: ${d.endings.length}/6</div>
+            <button class="btn main" data-to="start">🔁 Сыграть заново</button>
+            <button class="btn" data-menu>🏠 В меню</button>`;
+    } else {
+      h += scene.choices.map(([t, to], i) => `<button class="btn ${i ? "" : "main"}" data-to="${to}">${t}</button>`).join("");
+    }
+    box.innerHTML = h;
+    box.classList.add("on");
+    box.querySelectorAll("[data-to]").forEach(b => b.onclick = () => { haptic("medium"); go(b.dataset.to); });
+    const m = box.querySelector("[data-menu]"); if (m) m.onclick = () => show("menu");
+  }
+  function replay(id) {
+    go(id); replaying = true;
+  }
+  return { start: () => go("start"), replay, stop: () => { vid.pause(); vid.removeAttribute("src"); vid.load(); box.classList.remove("on"); } };
+})();
+
+// =====================================================================
+// 2. ПОБЕГ ПО КОРИДОРУ — раннер с тремя дорожками
+// =====================================================================
+const IMG = {};
+function img(name) { if (!IMG[name]) { IMG[name] = new Image(); IMG[name].src = `assets/${name}`; } return IMG[name]; }
+["corridor.jpg", "max_hit.png", ...[0,1,2,3,4,5,6,7].map(k => `max_run_${k}.png`)].forEach(img);
+
+const Run = (() => {
+  const cv = $("cv"), cx = cv.getContext("2d"), over = $("r-over");
+  let W = 0, H = 0, raf = 0, last = 0, st = null;
+  function resize() {
+    const r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener("resize", () => current === "run" && resize());
+  const laneX = (l) => W * (0.5 + (l - 1) * 0.28);
+  function reset() {
+    st = { t: 0, lane: 1, x: 0, objs: [], spawn: 0.8, dist: 0, btns: 0, alive: true, hitT: 0, speed: 260 };
+    st.x = laneX(1);
+  }
+  function move(d) {
+    if (!st || !st.alive) return;
+    const n = Math.max(0, Math.min(2, st.lane + d));
+    if (n !== st.lane) { st.lane = n; haptic("light"); beep(500 + n * 120, 0.06, "triangle", 0.06); }
+  }
+  // управление: свайп или тап по половине экрана, стрелки на клавиатуре
+  let sx = null;
+  cv.addEventListener("pointerdown", e => { sx = e.clientX; });
+  cv.addEventListener("pointerup", e => {
+    if (sx === null) return;
+    const dx = e.clientX - sx; sx = null;
+    if (Math.abs(dx) > 25) move(dx > 0 ? 1 : -1); else move(e.clientX > W / 2 ? 1 : -1);
+  });
+  window.addEventListener("keydown", e => { if (current !== "run") return; if (e.key === "ArrowLeft") move(-1); if (e.key === "ArrowRight") move(1); });
+
+  function spawn() {
+    const free = [0, 1, 2];
+    const n = st.t > 25 && Math.random() < 0.35 ? 2 : 1; // позже — по две лампы сразу
+    for (let i = 0; i < n; i++) {
+      const l = free.splice(Math.floor(Math.random() * free.length), 1)[0];
+      const kind = Math.random() < 0.6 ? "lamp" : "clock";
+      st.objs.push({ kind, lane: l, y: -60, r: kind === "lamp" ? 26 : 30, rot: 0 });
+    }
+    if (Math.random() < 0.45 && free.length) {
+      const l = free[Math.floor(Math.random() * free.length)];
+      st.objs.push({ kind: "btn", lane: l, y: -140, r: 20, rot: 0 });
+    }
+  }
+  function drawLamp(o) {
+    const x = laneX(o.lane), y = o.y;
+    const g = cx.createRadialGradient(x, y, 4, x, y, 70); g.addColorStop(0, "rgba(255,214,120,.55)"); g.addColorStop(1, "rgba(255,214,120,0)");
+    cx.fillStyle = g; cx.beginPath(); cx.arc(x, y, 70, 0, 7); cx.fill();
+    cx.strokeStyle = "#3a2a20"; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(x, y - 26); cx.lineTo(x, y - 60); cx.stroke();
+    cx.fillStyle = "#ffeab4"; cx.strokeStyle = "#26181a"; cx.lineWidth = 3;
+    cx.beginPath(); cx.ellipse(x, y, 30, 14, 0, 0, 7); cx.fill(); cx.stroke();
+    cx.fillStyle = "#8a6a40"; cx.fillRect(x - 10, y - 26, 20, 14);
+  }
+  function drawClock(o) {
+    const x = laneX(o.lane), y = o.y;
+    cx.save(); cx.translate(x, y); cx.rotate(o.rot);
+    cx.fillStyle = "#b08a48"; cx.beginPath(); cx.arc(0, 0, 32, 0, 7); cx.fill();
+    cx.fillStyle = "#f4ead2"; cx.strokeStyle = "#26181a"; cx.lineWidth = 3; cx.beginPath(); cx.arc(0, 0, 26, 0, 7); cx.fill(); cx.stroke();
+    cx.lineWidth = 3; cx.beginPath(); cx.moveTo(0, 0); cx.lineTo(0, -18); cx.moveTo(0, 0); cx.lineTo(12, 4); cx.stroke();
+    cx.restore();
+  }
+  function drawBtn(o) {
+    const x = laneX(o.lane), y = o.y, p = 1 + 0.08 * Math.sin(st.t * 8);
+    const g = cx.createRadialGradient(x, y, 2, x, y, 46); g.addColorStop(0, "rgba(255,206,110,.7)"); g.addColorStop(1, "rgba(255,206,110,0)");
+    cx.fillStyle = g; cx.beginPath(); cx.arc(x, y, 46, 0, 7); cx.fill();
+    cx.fillStyle = "#56544f"; cx.beginPath(); cx.arc(x, y, 22 * p, 0, 7); cx.fill();
+    cx.fillStyle = "#ffd66e"; cx.beginPath(); cx.arc(x, y, 17 * p, 0, 7); cx.fill();
+    cx.fillStyle = "#6a3600"; cx.font = `900 ${18 * p}px Arial Black, Arial`; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText("7", x, y + 1);
+  }
+  function frame(now) {
+    raf = requestAnimationFrame(frame);
+    const dt = Math.min(0.05, (now - last) / 1000 || 0); last = now;
+    const s = st;
+    if (s.alive) {
+      s.t += dt; s.speed = 260 + s.t * 9; s.dist += dt * (6 + s.t * 0.15);
+      s.spawn -= dt;
+      if (s.spawn <= 0) { spawn(); s.spawn = Math.max(0.38, 1.0 - s.t * 0.018); }
+    } else s.hitT += dt;
+    s.x += (laneX(s.lane) - s.x) * Math.min(1, dt * 16);
+    const py = H - 70, ph = Math.min(190, H * 0.27);
+    // фон: коридор + «бегущие» полосы ковра
+    const bg = IMG["corridor.jpg"];
+    if (bg.complete && bg.naturalWidth) {
+      const k = Math.max(W / bg.naturalWidth, H / bg.naturalHeight);
+      const bw = bg.naturalWidth * k, bh = bg.naturalHeight * k;
+      const bob = s.alive ? Math.sin(s.t * 15) * 3 : 0;
+      cx.drawImage(bg, (W - bw) / 2, (H - bh) / 2 + bob, bw, bh);
+    } else { cx.fillStyle = "#1a1030"; cx.fillRect(0, 0, W, H); }
+    cx.fillStyle = "rgba(255,206,110,.08)";
+    for (let i = 0; i < 8; i++) {
+      const y = ((s.t * s.speed * 0.6 + i * 90) % 720) / 720; const yy = H * 0.45 + y * y * H * 0.6;
+      cx.fillRect(0, yy, W, 3 + y * 8);
+    }
+    // объекты
+    for (const o of s.objs) {
+      if (s.alive) { o.y += s.speed * dt * (o.kind === "btn" ? 0.9 : 1); o.rot += dt * 3; }
+      if (o.kind === "lamp") drawLamp(o); else if (o.kind === "clock") drawClock(o); else drawBtn(o);
+      // столкновение
+      if (s.alive && !o.done && o.lane === s.lane && o.y > py - ph * 0.85 && o.y < py - ph * 0.25) {
+        o.done = true;
+        if (o.kind === "btn") { s.btns++; beep(880, 0.12, "square", 0.07); haptic("light"); o.y = H + 200; }
+        else { s.alive = false; haptic("err"); beep(90, 0.5, "sawtooth", 0.25); end(); }
+      }
+    }
+    s.objs = s.objs.filter(o => o.y < H + 100);
+    // Макс
+    const fr = s.alive ? IMG[`max_run_${Math.floor(s.t * 18) % 8}.png`] : IMG["max_hit.png"];
+    if (fr && fr.complete && fr.naturalWidth) {
+      const w = fr.naturalWidth * ph / fr.naturalHeight;
+      const shake = !s.alive && s.hitT < 0.4 ? Math.sin(s.hitT * 80) * 6 : 0;
+      cx.fillStyle = "rgba(0,0,0,.35)"; cx.beginPath(); cx.ellipse(s.x, py + 4, w * 0.45, 10, 0, 0, 7); cx.fill();
+      cx.drawImage(fr, s.x - w / 2 + shake, py - ph + (s.alive ? Math.abs(Math.sin(s.t * 15)) * -6 : 0), w, ph);
+    }
+    // темнота сгущается
+    const dark = Math.min(0.55, s.t * 0.008);
+    const vg = cx.createRadialGradient(W / 2, H * 0.6, H * 0.2, W / 2, H * 0.6, H * 0.8);
+    vg.addColorStop(0, "rgba(4,2,12,0)"); vg.addColorStop(1, `rgba(4,2,12,${0.55 + dark})`);
+    cx.fillStyle = vg; cx.fillRect(0, 0, W, H);
+    if (!s.alive && s.hitT < 0.15) { cx.fillStyle = "rgba(255,255,255,.5)"; cx.fillRect(0, 0, W, H); }
+    $("r-score").textContent = `${Math.floor(s.dist)} м`;
+    $("r-btn").textContent = `🟡 ${s.btns}`;
+  }
+  function end() {
+    const score = Math.floor(st.dist) + st.btns * 10;
+    const best = save.data.run || 0, rec = score > best;
+    if (rec) { save.data.run = score; save.put(); }
+    setTimeout(() => {
+      over.innerHTML = `<img src="assets/max_hit.png" alt=""><h2>${rec ? "НОВЫЙ РЕКОРД!" : "ПОЙМАН!"}</h2>
+        <p>${Math.floor(st.dist)} м + ${st.btns} кнопок × 10 = <b style="color:var(--lamp)">${score}</b><br>Рекорд: ${Math.max(best, score)}</p>
+        <button class="btn main" id="r-again">🔁 Ещё раз</button><button class="btn" id="r-menu">🏠 В меню</button>`;
+      over.classList.add("on");
+      $("r-again").onclick = () => { haptic("medium"); start(); };
+      $("r-menu").onclick = () => show("menu");
+    }, 700);
+  }
+  function start() {
+    over.classList.remove("on"); resize(); reset();
+    cancelAnimationFrame(raf); last = performance.now(); raf = requestAnimationFrame(frame);
+    ding();
+  }
+  return { start, stop: () => { cancelAnimationFrame(raf); over.classList.remove("on"); } };
+})();
+
+// =====================================================================
+// 3. ЗАПОМНИ ЭТАЖИ — повтори кнопки, доберись до 7-го
+// =====================================================================
+const Simon = (() => {
+  const pad = $("pad"), disp = $("display"), hint = $("hint"), over = $("s-over");
+  const TONES = [262, 294, 330, 349, 392, 440, 494, 523, 587, 659, 698, 784];
+  const GOAL = 7;
+  let seq = [], pos = 0, floor = 1, timers = [], alive = false;
+  for (let i = 1; i <= 12; i++) {
+    const b = document.createElement("button"); b.className = "fl"; b.textContent = i; b.dataset.n = i;
+    b.addEventListener("pointerdown", () => press(i, b)); pad.appendChild(b);
+  }
+  const btn = (n) => pad.children[n - 1];
+  const later = (f, ms) => timers.push(setTimeout(f, ms));
+  function light(n, ms = 380) { const b = btn(n); b.classList.add("lit"); beep(TONES[n - 1], ms / 1000, "triangle", 0.16); later(() => b.classList.remove("lit"), ms); }
+  function showSeq() {
+    pad.classList.add("lock"); hint.textContent = "Смотри…";
+    const gap = Math.max(330, 620 - seq.length * 30);
+    seq.forEach((n, i) => later(() => light(n, gap * 0.7), 700 + i * gap));
+    later(() => { pad.classList.remove("lock"); hint.textContent = "Повтори!"; pos = 0; }, 700 + seq.length * gap);
+  }
+  function round() {
+    // длина последовательности = этаж + 1
+    while (seq.length < floor + 1) seq.push(1 + Math.floor(Math.random() * 12));
+    disp.textContent = floor; disp.classList.remove("bad");
+    showSeq();
+  }
+  function press(n, b) {
+    if (!alive || pad.classList.contains("lock")) return;
+    ac();
+    if (seq[pos] === n) {
+      light(n, 220); haptic("light"); pos++;
+      if (pos === seq.length) {
+        pad.classList.add("lock");
+        floor++;
+        later(() => {
+          if (floor > GOAL) return win();
+          ding(); hint.textContent = `Этаж ${floor}…`; disp.textContent = floor; later(round, 900);
+        }, 400);
+      }
+    } else {
+      alive = false; b.classList.add("bad"); haptic("err"); beep(110, 0.7, "sawtooth", 0.22);
+      pad.classList.add("lock");
+      // табло сходит с ума и показывает 13
+      let k = 0;
+      const spin = setInterval(() => { disp.textContent = 1 + Math.floor(Math.random() * 12); if (++k > 12) { clearInterval(spin); disp.textContent = "13"; disp.classList.add("bad"); } }, 70);
+      timers.push(spin);
+      later(() => finish(false), 1500);
+    }
+  }
+  function finish(won) {
+    const reached = Math.min(floor, GOAL);
+    if (reached > (save.data.simon || 0)) { save.data.simon = reached; save.put(); }
+    over.innerHTML = won
+      ? `<img src="assets/max_idle.png" alt=""><h2>ТЫ ДОМА!</h2><p>Лифт честно приехал на 7-й этаж. В этот раз…</p>`
+      : `<img src="assets/max_hit.png" alt=""><h2 style="color:var(--danger)">ЭТАЖ 13</h2><p>Ты ошибся — и лифт повёз тебя туда, где этажа нет.<br>Ты добрался до этажа ${reached} из ${GOAL}.</p>`;
+    over.innerHTML += `<button class="btn main" id="s-again">🔁 Ещё раз</button><button class="btn" id="s-menu">🏠 В меню</button>`;
+    over.classList.add("on");
+    $("s-again").onclick = () => { haptic("medium"); start(); };
+    $("s-menu").onclick = () => show("menu");
+  }
+  function win() { haptic("ok"); ding(); finish(true); }
+  function stop() { timers.forEach(t => { clearTimeout(t); clearInterval(t); }); timers = []; over.classList.remove("on"); [...pad.children].forEach(b => b.classList.remove("lit", "bad")); }
+  function start() { stop(); seq = []; floor = 1; alive = true; hint.textContent = ""; later(round, 300); }
+  return { start, stop: () => { alive = false; stop(); } };
+})();
+
+save.load(); menuStats();
+</script>
+</body>
+</html>
