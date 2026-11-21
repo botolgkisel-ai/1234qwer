@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ru">
 <head>
 <meta charset="utf-8">
@@ -47,6 +47,42 @@ h1,.big{font-family:"Arial Black","Segoe UI Black",Impact,system-ui,sans-serif;l
 .end-t.got{border-color:#6a5420;background:linear-gradient(160deg,#2a2152,#3a2a10)}
 .end-t.got b{color:var(--lamp)}
 .end-t .btn{padding:9px;font-size:13px}
+#menu .card:nth-of-type(4){animation-delay:.3s}#menu .card:nth-of-type(5){animation-delay:.35s}#menu .gal{animation-delay:.45s}
+.eyes-thumb{background:radial-gradient(circle at 50% 60%,#1a1236,#05030c)}
+.eyes-thumb i{position:absolute;width:26px;height:8px;background:radial-gradient(circle at 25% 50%,#ff5a4a 0 3px,transparent 4px),radial-gradient(circle at 75% 50%,#ff5a4a 0 3px,transparent 4px);filter:drop-shadow(0 0 4px #ff3a2a);animation:blinkE 3s infinite}
+.eyes-thumb i:nth-child(1){left:12px;top:24px}.eyes-thumb i:nth-child(2){left:46px;top:58px;animation-delay:1s}.eyes-thumb i:nth-child(3){left:20px;top:86px;animation-delay:2s}
+@keyframes blinkE{0%,40%,48%,100%{transform:scaleY(1)}44%{transform:scaleY(.1)}}
+.stop-thumb{background:#0a0c12;display:flex;align-items:center;justify-content:center}
+.stop-thumb span{font:900 54px "Arial Black",Impact,sans-serif;color:var(--lamp);text-shadow:0 0 14px rgba(255,206,110,.8);animation:flicker 2.4s infinite}
+/* охота на глаза */
+#eyes{background:#04020a url(assets/corridor.jpg) center/cover}
+#eyes::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(4,2,10,.55),rgba(4,2,10,.94) 70%)}
+#e-field{position:absolute;inset:0;touch-action:manipulation}
+.eye{position:absolute;width:96px;height:64px;margin:-32px 0 0 -48px;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer}
+.eye i{width:16px;height:8px;border-radius:50%;background:#ff4a3a;box-shadow:0 0 12px 4px rgba(255,60,40,.7);transform:scaleY(.05);transition:transform .25s}
+.eye.open i{transform:scaleY(1)}
+.eye.gold i{background:#ffd66e;box-shadow:0 0 14px 5px rgba(255,206,110,.8)}
+.eye.angry i{width:22px;height:12px;animation:shake .2s infinite}
+.flash{position:absolute;width:160px;height:160px;margin:-80px 0 0 -80px;border-radius:50%;background:radial-gradient(circle,rgba(255,244,200,.95),rgba(255,206,110,0) 70%);pointer-events:none;animation:flashA .35s ease-out forwards}
+@keyframes flashA{from{transform:scale(.3);opacity:1}to{transform:scale(1.4);opacity:0}}
+.pop{position:absolute;font-weight:900;color:var(--lamp);pointer-events:none;animation:popA .7s ease-out forwards;text-shadow:0 2px 6px #000}
+@keyframes popA{to{transform:translateY(-50px);opacity:0}}
+.hurt{animation:hurtA .4s}
+@keyframes hurtA{0%{box-shadow:inset 0 0 0 0 rgba(255,0,0,.0)}30%{box-shadow:inset 0 0 120px 40px rgba(255,30,20,.7)}100%{box-shadow:inset 0 0 0 0 rgba(255,0,0,0)}}
+/* стоп на 7-м */
+#stop7{background:#06051a url(assets/panel.jpg) center/cover;align-items:center;justify-content:center;gap:18px}
+#t-strip{display:flex;gap:4px;margin-top:40px}
+#t-strip b{width:20px;height:20px;border-radius:50%;background:#2e2c2e;font-size:10px;display:flex;align-items:center;justify-content:center;color:#77736e}
+#t-strip b.on{background:var(--lamp);color:#6a3600;box-shadow:0 0 12px rgba(255,206,110,.9)}
+#t-strip b.seven{outline:2px solid #8cff9a}
+#t-strip b.bad{background:#5a1a1a;color:#ff8a8a}
+#t-display{width:220px;height:150px;border-radius:18px;background:#0a0c12;border:5px solid #2c2f3a;display:flex;align-items:center;justify-content:center;font:900 96px "Arial Black",Impact,sans-serif;color:var(--lamp);text-shadow:0 0 22px rgba(255,206,110,.85)}
+#t-display.s13{color:var(--danger);text-shadow:0 0 22px rgba(255,80,80,.9)}
+#t-display.win{color:#8cff9a;text-shadow:0 0 22px rgba(120,255,150,.9);animation:bob2 .4s}
+@keyframes bob2{50%{transform:scale(1.12)}}
+#t-msg{min-height:22px;color:#e8e2ff;text-shadow:0 1px 4px #000;text-align:center;padding:0 16px}
+#t-stop{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#ff7a6a,#c0201a 60%,#7a0e0a);border:6px solid #3a3a3e;box-shadow:0 8px 0 #2a0806,0 12px 30px rgba(0,0,0,.6);font:900 30px "Arial Black",Impact,sans-serif;color:#fff;text-shadow:0 2px 4px #000}
+#t-stop:active{transform:translateY(6px);box-shadow:0 2px 0 #2a0806}
 /* плавная смена клипов */
 #story video{transition:opacity .25s}
 #story video.fade{opacity:0}
@@ -109,6 +145,14 @@ h1,.big{font-family:"Arial Black","Segoe UI Black",Impact,system-ui,sans-serif;l
     <div class="thumb" style="background-image:url(assets/panel.jpg)"><img src="assets/max_hit.png" alt=""></div>
     <div><b>🔢 Запомни этажи</b><p>Лифт показывает кнопки — повтори. Ошибёшься — поедешь на 13-й.</p><div class="stat" id="st-simon"></div></div>
   </button>
+  <button class="card" data-go="eyes">
+    <div class="thumb eyes-thumb"><i></i><i></i><i></i></div>
+    <div><b>👀 Охота на глаза</b><p>Во тьме коридора открываются глаза. Свети на них фонариком, пока они не подобрались.</p><div class="stat" id="st-eyes"></div></div>
+  </button>
+  <button class="card" data-go="stop7">
+    <div class="thumb stop-thumb"><span>7</span></div>
+    <div><b>🛑 Стоп на 7-м</b><p>Табло летит по этажам. Жми «СТОП» ровно на 7-м. Только не на 13-м!</p><div class="stat" id="st-stop7"></div></div>
+  </button>
   <button class="gal" data-gallery>🏆 Мои концовки <span id="st-gal"></span></button>
   <div class="dust" id="dust"></div>
 </section>
@@ -132,6 +176,23 @@ h1,.big{font-family:"Arial Black","Segoe UI Black",Impact,system-ui,sans-serif;l
   <canvas id="cv"></canvas>
   <div class="hud"><span id="r-score">0 м</span><span id="r-btn">🟡 0</span></div>
   <div class="over" id="r-over"></div>
+</section>
+
+<!-- ===================== ОХОТА НА ГЛАЗА ===================== -->
+<section id="eyes" class="screen">
+  <div id="e-field"></div>
+  <div class="hud"><span id="e-score">👀 0</span><span id="e-time">⏱ 30</span><span id="e-lives">❤️❤️❤️</span></div>
+  <div class="over" id="e-over"></div>
+</section>
+
+<!-- ===================== СТОП НА 7-М ===================== -->
+<section id="stop7" class="screen">
+  <div class="hud"><span id="t-score">✅ 0</span><span id="t-lives">❤️❤️❤️</span></div>
+  <div id="t-strip"></div>
+  <div id="t-display">1</div>
+  <div id="t-msg">Жми «СТОП», когда табло покажет 7</div>
+  <button id="t-stop">СТОП</button>
+  <div class="over" id="t-over"></div>
 </section>
 
 <!-- ===================== ЗАПОМНИ ЭТАЖИ ===================== -->
@@ -165,7 +226,7 @@ const save = {
     const d = this.data;
     d.endings = [...new Set([...(d.endings || []), ...(c.endings || [])])];
     d.run = Math.max(d.run || 0, c.run || 0);
-    d.simon = Math.max(d.simon || 0, c.simon || 0);
+    for (const k of ["simon", "eyes", "stop7"]) d[k] = Math.max(d[k] || 0, c[k] || 0);
   },
   put() {
     const s = JSON.stringify(this.data);
@@ -190,9 +251,7 @@ const ding = () => { beep(1318, 0.9, "sine", 0.15); setTimeout(() => beep(1046, 
 let current = "menu";
 function show(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === id));
-  if (current === "run" && id !== "run") Run.stop();
-  if (current === "story" && id !== "story") Story.stop();
-  if (current === "simon" && id !== "simon") Simon.stop();
+  if (current !== id && GAMES[current]) GAMES[current]().stop();
   current = id;
   if (tg && tg.BackButton) id === "menu" ? tg.BackButton.hide() : tg.BackButton.show();
   if (id === "menu") menuStats();
@@ -201,8 +260,10 @@ if (tg && tg.BackButton) tg.BackButton.onClick(() => show("menu"));
 document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => {
   ac(); haptic("light");
   const g = b.dataset.go; show(g);
-  ({ story: () => Story.start(), run: () => Run.start(), simon: () => Simon.start() })[g]();
+  GAMES[g]().start();
 }));
+// все игры: id экрана -> модуль (функция, т.к. модули объявлены ниже)
+const GAMES = { story: () => Story, run: () => Run, simon: () => Simon, eyes: () => Eyes, stop7: () => Stop7 };
 // пылинки в свете лампы
 for (let i = 0; i < 26; i++) {
   const p = document.createElement("i");
@@ -218,7 +279,11 @@ const ENDS = [
   ["basement", "Минус тринадцатый", "Не сдаваться в самом начале"],
   ["voice", "Голос в динамике", "Поговорить с голосом"],
   ["home", "Домой. Почти.", "Найти зелёную табличку"],
+  ["clock", "Застрявший во времени", "Поторопить время"],
+  ["call", "Лифт пришёл не один", "Вернуться к старому лифту"],
+  ["knock", "Тук-тук", "Ответить на стук"],
 ];
+const NEND = ENDS.length;
 document.querySelector("[data-gallery]").addEventListener("click", () => { haptic("light"); show("gallery"); gallery(); });
 function gallery() {
   const got = save.data.endings || [];
@@ -229,10 +294,12 @@ function gallery() {
 }
 function menuStats() {
   const d = save.data;
-  $("st-gal").textContent = `${(d.endings || []).length}/6`;
-  $("st-story").textContent = `Концовки: ${(d.endings || []).length}/6`;
+  $("st-gal").textContent = `${(d.endings || []).length}/${NEND}`;
+  $("st-story").textContent = `Концовки: ${(d.endings || []).length}/${NEND}`;
   $("st-run").textContent = d.run ? `Рекорд: ${d.run} м` : "";
   $("st-simon").textContent = d.simon ? `Лучший этаж: ${d.simon}` : "";
+  $("st-eyes").textContent = d.eyes ? `Рекорд: ${d.eyes} глаз` : "";
+  $("st-stop7").textContent = d.stop7 ? `Рекорд: ${d.stop7} остановок` : "";
 }
 
 // =====================================================================
@@ -243,10 +310,15 @@ const SCENES = {
     choices: [["🚪 Выйти в коридор", "out"], ["🛗 Остаться в лифте", "stay"], ["🔘 Жать «7», пока не поедет", "basement"]] },
   basement: { clips: ["end_basement"], text: "Ты жал «7», пока лифт не сорвался вниз. Мимо первого. Мимо подвала. <b>−13.</b> Двери открылись в темноту, полную глаз.", ending: "Минус тринадцатый" },
   stay: { clips: ["stay"], text: "Ты остался. Лампа лопнула, кабина рухнула — ты еле успел выпрыгнуть. <b>Лифт решил за тебя.</b>", choices: [["➡️ Дальше", "corridor"]] },
-  out: { clips: ["go_out"], text: "Ты шагаешь в коридор. За спиной с лязгом захлопываются двери.", choices: [["➡️ Дальше", "corridor"]] },
+  out: { clips: ["go_out"], text: "Ты шагаешь в коридор. За спиной с лязгом захлопываются двери. На стене — часы, и они <b>идут назад</b>.",
+    choices: [["🚶 Идти по коридору", "corridor"], ["🕰 Перевести часы вперёд", "clock"]] },
+  clock: { clips: ["end_clock"], text: "Ты крутишь стрелки вперёд — быстрее, быстрее… Щёлк. Всё замерло. Пыль повисла в воздухе. Здесь всегда <b>13:13</b>.", ending: "Застрявший во времени" },
   corridor: { clips: ["corridor"], text: "Часы идут назад. В конце коридора — маленькая дверь. Из-за неё: <b>тук. тук. тук.</b>",
-    choices: [["🚪 Подойти к двери", "lift2"], ["🏃 Бежать к лифту", "run_back"]] },
-  run_back: { clips: ["run_back"], text: "Ты колотишь по дверям лифта. Они не откроются. <b>Назад дороги нет.</b>", choices: [["🚪 Пойти к двери", "lift2"]] },
+    choices: [["🚪 Подойти к двери", "lift2"], ["🏃 Бежать к лифту", "run_back"], ["✊ Постучать в ответ", "knock"]] },
+  knock: { clips: ["end_knock"], text: "Ты постучал в ответ. За дверью застучали — всё чаще, со всех сторон… Теперь <b>ты</b> по ту сторону двери. И стучишь.", ending: "Тук-тук" },
+  run_back: { clips: ["run_back"], text: "Ты колотишь по дверям лифта. Они не откроются. Рядом — <b>кнопка вызова</b>.",
+    choices: [["🚪 Пойти к двери", "lift2"], ["🔘 Нажать кнопку вызова", "call"]] },
+  call: { clips: ["end_call"], text: "Динь! Лифт пришёл. Внутри уже кто-то стоит — с твоими вихрами и светящимися глазами. <i>«Заходи. Осталось одно место.»</i>", ending: "Лифт пришёл не один" },
   lift2: { clips: ["lift2"], text: "За дверью — новенький лифт. Одна кнопка: <b>14</b>. Твой собственный голос из динамика: <i>«Макс, не нажимай эту кнопку.»</i>",
     choices: [["🔘 Нажать «14»", "press"], ["✋ Не нажимать и бежать", "refuse"], ["🗣 Спросить: «Кто ты?»", "voice"]] },
   voice: { clips: ["end_voice"], text: "<i>«Я — это ты. Через минуту.»</i> Лифт моргнул — и теперь <b>ты</b> смотришь из динамика на следующего Макса.", ending: "Голос в динамике" },
@@ -294,7 +366,7 @@ const Story = (() => {
       if (isNew) { d.endings.push(scene.ending); save.put(); }
       haptic("ok");
       h += `<div class="end big">🏁 ${scene.ending}${isNew ? " — новая!" : ""}</div>
-            <div class="txt" style="text-align:center;color:var(--muted)">Найдено концовок: ${d.endings.length}/6</div>
+            <div class="txt" style="text-align:center;color:var(--muted)">Найдено концовок: ${d.endings.length}/${NEND}</div>
             <button class="btn main" data-to="start">🔁 Сыграть заново</button>
             <button class="btn" data-menu>🏠 В меню</button>`;
     } else {
@@ -523,6 +595,125 @@ const Simon = (() => {
   function stop() { timers.forEach(t => { clearTimeout(t); clearInterval(t); }); timers = []; over.classList.remove("on"); [...pad.children].forEach(b => b.classList.remove("lit", "bad")); }
   function start() { stop(); seq = []; floor = 1; alive = true; hint.textContent = ""; later(round, 300); }
   return { start, stop: () => { alive = false; stop(); } };
+})();
+
+// общий экран «конец игры»
+function gameOver(box, key, score, title, text, img, again) {
+  const best = save.data[key] || 0, rec = score > best;
+  if (rec) { save.data[key] = score; save.put(); }
+  box.innerHTML = `<img src="assets/${img}" alt=""><h2>${rec ? "НОВЫЙ РЕКОРД!" : title}</h2>
+    <p>${text}<br>Рекорд: <b style="color:var(--lamp)">${Math.max(best, score)}</b></p>
+    <button class="btn main" data-a>🔁 Ещё раз</button><button class="btn" data-m>🏠 В меню</button>`;
+  box.classList.add("on");
+  box.querySelector("[data-a]").onclick = () => { haptic("medium"); again(); };
+  box.querySelector("[data-m]").onclick = () => show("menu");
+}
+
+// =====================================================================
+// 4. ОХОТА НА ГЛАЗА — тапай по глазам в темноте, пока они не подобрались
+// =====================================================================
+const Eyes = (() => {
+  const field = $("e-field"), over = $("e-over"), scr = $("eyes");
+  let score = 0, lives = 3, timeLeft = 30, timers = [], alive = false, tick = 0;
+  const later = (f, ms) => { const id = setTimeout(f, ms); timers.push(id); return id; };
+  function hud() {
+    $("e-score").textContent = `👀 ${score}`;
+    $("e-time").textContent = `⏱ ${Math.ceil(timeLeft)}`;
+    $("e-lives").textContent = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
+  }
+  function fx(cls, x, y, txt) {
+    const e = document.createElement("div"); e.className = cls; e.style.left = x + "px"; e.style.top = y + "px";
+    if (txt) e.textContent = txt; field.appendChild(e); later(() => e.remove(), 800);
+  }
+  function spawn() {
+    if (!alive) return;
+    const r = field.getBoundingClientRect();
+    const x = 50 + Math.random() * (r.width - 100), y = 90 + Math.random() * (r.height - 170);
+    const gold = Math.random() < 0.12;
+    const life = Math.max(900, 2200 - score * 35);  // чем больше очков, тем быстрее они нападают
+    const e = document.createElement("div"); e.className = "eye" + (gold ? " gold" : ""); e.innerHTML = "<i></i><i></i>";
+    e.style.left = x + "px"; e.style.top = y + "px"; field.appendChild(e);
+    requestAnimationFrame(() => e.classList.add("open"));
+    let done = false;
+    const hit = (ev) => {
+      ev.preventDefault(); if (done || !alive) return; done = true;
+      const pts = gold ? 3 : 1; score += pts; hud();
+      fx("flash", x, y); fx("pop", x - 10, y - 30, "+" + pts);
+      beep(gold ? 1200 : 880, 0.08, "triangle", 0.1); haptic("light"); e.remove();
+    };
+    e.addEventListener("pointerdown", hit);
+    later(() => { if (!done) e.classList.add("angry"); }, life * 0.7);
+    later(() => {
+      if (done || !alive) return; done = true; e.remove();
+      if (gold) return;  // золотые просто исчезают
+      lives--; hud(); haptic("err"); beep(100, 0.35, "sawtooth", 0.2);
+      scr.classList.remove("hurt"); void scr.offsetWidth; scr.classList.add("hurt");
+      if (lives <= 0) end("Тебя поймали!");
+    }, life);
+    later(spawn, Math.max(320, 900 - score * 18) * (0.6 + Math.random() * 0.8));
+  }
+  function end(title) {
+    alive = false; clearInterval(tick);
+    later(() => gameOver(over, "eyes", score, title, `Ты спугнул ${score} пар глаз.`, "max_hit.png", start), 500);
+  }
+  function stop() { alive = false; timers.forEach(clearTimeout); timers = []; clearInterval(tick); field.innerHTML = ""; over.classList.remove("on"); }
+  function start() {
+    stop(); score = 0; lives = 3; timeLeft = 30; alive = true; hud(); ding();
+    tick = setInterval(() => { timeLeft -= 0.1; hud(); if (timeLeft <= 0) end("ВРЕМЯ ВЫШЛО!"); }, 100);
+    later(spawn, 600);
+  }
+  return { start, stop };
+})();
+
+// =====================================================================
+// 5. СТОП НА 7-М — останови табло ровно на 7-м этаже
+// =====================================================================
+const Stop7 = (() => {
+  const disp = $("t-display"), strip = $("t-strip"), msg = $("t-msg"), btn = $("t-stop"), over = $("t-over");
+  let floor = 1, dir = 1, score = 0, lives = 3, timer = 0, alive = false, pause = false;
+  strip.innerHTML = Array.from({ length: 13 }, (_, i) => `<b class="${i === 6 ? "seven" : ""}${i === 12 ? " bad" : ""}">${i + 1}</b>`).join("");
+  const speed = () => Math.max(55, 260 - score * 18);  // мс на этаж
+  function hud() { $("t-score").textContent = `✅ ${score}`; $("t-lives").textContent = "❤️".repeat(lives) + "🖤".repeat(3 - lives); }
+  function draw() {
+    disp.textContent = floor; disp.classList.toggle("s13", floor === 13);
+    [...strip.children].forEach((b, i) => b.classList.toggle("on", i + 1 === floor));
+  }
+  function step() {
+    if (!alive || pause) return;
+    floor += dir;
+    if (floor >= 13) { floor = 13; dir = -1; } else if (floor <= 1) { floor = 1; dir = 1; }
+    // иногда лифт «дёргается» и меняет направление — чтобы не было слишком просто
+    if (score > 4 && Math.random() < 0.06) dir = -dir;
+    draw(); beep(300 + floor * 40, 0.03, "square", 0.03);
+    timer = setTimeout(step, speed());
+  }
+  function press() {
+    if (!alive || pause) return;
+    clearTimeout(timer); pause = true; ac();
+    if (floor === 7) {
+      score++; hud(); disp.classList.add("win"); ding(); haptic("ok");
+      msg.textContent = ["Точно!", "Седьмой!", "Дома!", "Идеально!"][score % 4] + " Быстрее…";
+    } else if (floor === 13) {
+      lives = 0; hud(); haptic("err"); beep(80, 0.8, "sawtooth", 0.25); msg.textContent = "ЭТАЖ 13!!!";
+      return setTimeout(() => end("ЭТАЖ 13"), 900);
+    } else {
+      lives--; hud(); haptic("err"); beep(140, 0.4, "sawtooth", 0.2);
+      msg.textContent = `Этаж ${floor}. Мимо!`;
+      if (lives <= 0) return setTimeout(() => end("МИМО!"), 700);
+    }
+    setTimeout(() => { disp.classList.remove("win"); pause = false; floor = Math.random() < 0.5 ? 1 : 13 - 1; dir = floor === 1 ? 1 : -1; draw(); timer = setTimeout(step, 500); }, 900);
+  }
+  btn.addEventListener("pointerdown", (e) => { e.preventDefault(); press(); });
+  function end(title) {
+    alive = false; clearTimeout(timer);
+    gameOver(over, "stop7", score, title, `Ты остановил лифт на 7-м ${score} раз.`, floor === 13 ? "max_hit.png" : "max_idle.png", start);
+  }
+  function stop() { alive = false; clearTimeout(timer); over.classList.remove("on"); }
+  function start() {
+    stop(); floor = 1; dir = 1; score = 0; lives = 3; alive = true; pause = false;
+    hud(); draw(); msg.textContent = "Жми «СТОП», когда табло покажет 7"; timer = setTimeout(step, 700);
+  }
+  return { start, stop };
 })();
 
 save.load(); menuStats();
